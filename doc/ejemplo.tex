@@ -1,0 +1,168 @@
+\documentclass{pre-tfg}
+
+\usepackage{listings}
+\usepackage{formular}
+\usepackage[pdftex]{graphicx}
+
+\showhelp  % comenta o borra para eliminar ayudas
+
+\title{ClassifiAds: Sistema de clasificación de páginas web con respecto a Banners}
+\author{Alberto Aranda García y Cristian Gómez Portes}
+\advisorFirst{Luis Rodríguez Benitez}
+\advisorDepartment{Departamento de Tecnologías y Sistemas de Información}
+\advisorSecond{}
+\intensification{COMPUTACIÓN}
+\docdate{2017}{Octubre}
+
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{color}
+\definecolor{gray97}{gray}{.97}
+\definecolor{gray75}{gray}{.75}
+\definecolor{gray45}{gray}{.45}
+
+\lstset{ frame=Ltb,
+     framerule=0pt,
+     aboveskip=0.5cm,
+     framextopmargin=3pt,
+     framexbottommargin=3pt,
+     framexleftmargin=0.4cm,
+     framesep=0pt,
+     rulesep=.4pt,
+     backgroundcolor=\color{gray97},
+     rulesepcolor=\color{black},
+     %
+     stringstyle=\ttfamily,
+     showstringspaces = false,
+     basicstyle=\small\ttfamily,
+     commentstyle=\color{gray45},
+     keywordstyle=\bfseries,
+     %
+     numbers=left,
+     numbersep=15pt,
+     numberstyle=\tiny,
+     numberfirstline = false,
+     breaklines=true,
+   }
+
+% minimizar fragmentado de listados
+\lstnewenvironment{listing}[1][]
+   {\lstset{#1}\pagebreak[0]}{\pagebreak[0]}
+
+\lstdefinestyle{consola}
+   {basicstyle=\scriptsize\bf\ttfamily,
+    backgroundcolor=\color{gray75},
+   }
+
+% lenguaje que se utilizará
+\lstdefinestyle{java}
+   {language=Java,
+   }
+
+
+\renewcommand*\lstlistingname{Listado}
+
+
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{OBJETIVOS}
+
+Este proyecto trata de clasificar con un sistema multi-agente ciertas páginas dependiendo del número de anuncios o ``banners'' y sus tipos  asociadas a éstas.
+
+El sistema multiagente contará con 4 agentes, los cuales recogerán información de diferentes páginas (los anuncios o ``banners'' que encuentre) para enviárselo a otro agente, que estará en una capa inferior. Éste se encargará de procesar esa información para establecer el ranking y comprobar de qué tipo son los anuncios. Una vez tengamos la información procesada, ésta será enviada a otro agente, en una capa más inferior, que será el encargado de mostrar el ranking a el usuario mediante una interfaz o similar.
+
+Con respecto a la tecnología a utilizar, se usará Java como lenguaje de programación y Jade, un marco de software que simplifica la implementación de sistemas multi-agentes en Java -- en \cite{bellifemine2002jade} se puede encontrar más información sobre esta plataforma. Además, se utilizarán las siguientes librerías para facilitar el desarrollo del proyecto:
+
+\begin{itemize}
+ \item \textit{Jsoup}: librería utilizada para trabajar con HTML. Sitio de descarga: \url{https://jsoup.org/download}.
+\item  \textit{Regex}: librería para trabajar con expresiones regulares. Viene incluida en el paquete ``util'' de Java.
+\end{itemize}
+
+\section{ESTRUCTURA DEL SMA}
+El sistema multiagente desarrollado se compone de 6 agentes como se especificó en el apartado anterior. Los 4 agentes de la capa superior contarán con un comportamiento, el cual dedicará su tiempo a buscar diferentes tipos de anuncios. En el caso de que no se encontrará ningún anuncio, el comportamiento volvería a iniciarse para rastrear otra página diferente. Una vez el agente haya encontrado la información requerida, éste lo enviará a una capa inferior donde se aloja el agente de procesamiento. Este agente tendrá 4 comportamientos, los cuales se encargarán de procesar la información que cada agente de la capa superior le envió. Además, el agente de procesamiento responderá a cada agente enviándole una respuesta de confirmación de recepción de los datos para que éstos mueran. El agente de procesamiento gestionará la información que le envíe cada agente en el orden en el que éstos lo hagan. Después de que toda la información haya sido procesada, éste lo enviará al agente interfaz, el cual se encargará de la visualización de los datos. De igual manera que los agente de la capa superior reciben un mensaje de confirmación, el agente de procesamiento recibirá otro por parte del agente de interfaz. Finalmente, después de que los datos hayan sido mostrados, el usuario podra abortar la ejecución del programa cuando éste lo desee. Acto seguido, el agente interfaz morirá.
+
+En la figura \ref{fig:flujo-sma} se puede ver el flujo que los agentes seguirán a lo largo de la ejecución.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\textwidth]{flujo-sma}
+    \caption{Diagrama de flujo del sistema multiagente}
+    \label{fig:flujo-sma}
+\end{figure}
+
+\section{EJEMPLO}
+
+En este ejemplo se muestra el uso de la librería \textit{Jsoup} para el tratamiento de código HTML.
+
+\begin{lstlisting}[caption=Ejemplo de código de recuperación de información de la web,style=java]
+
+/**
+ * Example of retrieving information from the web
+ */
+package sample;
+
+import java.io.IOException;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+/**
+ * @author Alberto Aranda Garcia y Cristian Gomez Portes
+ *
+ */
+public class HTMLParserExample {
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Document doc;
+		try {
+			// need http protocol
+			doc = Jsoup.connect("http://google.com").get();
+			
+			// get the page title
+			String title = doc.title();
+			System.out.println("title: " + title);
+			
+			// get all links
+			Elements links = doc.select("a[href]");
+			for(Element link : links)
+			{
+				// get the value from href attribute
+				System.out.println("\nlink: " + link.attr("href"));
+				System.out.println("text: " + link.text());
+			}
+		}catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}
+
+\end{lstlisting}
+
+
+\newpage
+
+\bibliographystyle{alpha}
+\singlespacing
+\bibliography{ejemplo}
+
+
+\end{document}
+
+
+% Local Variables:
+% coding: utf-8
+% mode: flyspell
+% ispell-local-dictionary: "castellano8"
+% mode: latex
+% End:
