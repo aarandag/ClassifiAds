@@ -74,7 +74,7 @@
 
 \section{OBJETIVOS}
 
-Este proyecto trata de clasificar con un sistema multi-agente ciertas páginas dependiendo del número de anuncios o ``banners'' asociadas a éstas.
+Este proyecto trata de clasificar con un sistema multi-agente ciertas páginas dependiendo del número de anuncios o ``banners'' y sus tipos asociadas a éstas.
 
 El sistema multiagente contará con 4 agentes, los cuales recogerán información de diferentes páginas (los anuncios o ``banners'' que encuentre) para enviárselo a otro agente, que estará en una capa inferior. Éste se encargará de procesar esa información para establecer el ranking y comprobar de qué tipo son los anuncios. Una vez tengamos la información procesada, ésta será enviada a otro agente, en una capa más inferior, que será el encargado de mostrar el ranking a el usuario mediante una interfaz o similar.
 
@@ -86,9 +86,9 @@ Con respecto a la tecnología a utilizar, se usará Java como lenguaje de progra
 \end{itemize}
 
 \section{ESTRUCTURA DEL SMA}
-El sistema multiagente desarrollado se compone de 6 agentes como se especificó en el apartado anterior. Los 4 agentes de la capa superior contarán con un comportamiento, el cual dedicará su tiempo a buscar diferentes tipos de anuncios. Los anuncios que el agente encontrará deberán coincidir con la lista de servidores de anuncios que previamente se haya establecido, puesto que cada página coloca los ``banners'' de una forma u otra. En el caso de que no se encontrará ningún anuncio que corresponda con la lista mencionada anteriormente, el comportamiento volvería a iniciarse para rastrear otra página diferente.
+El sistema multiagente desarrollado se compone de 6 agentes como se especificó en el apartado anterior. Los 4 agentes de la capa superior contarán con un comportamiento, el cual dedicará su tiempo a buscar diferentes tipos de anuncios. En el caso de que no se encontrará ningún anuncio, el comportamiento volvería a iniciarse para rastrear otra página diferente.
 
-Una vez el agente haya encontrado la información requerida, éste lo enviará a una capa inferior donde se aloja el agente de procesamiento. Este agente tendrá 4 comportamientos, los cuales se encargarán de procesar la información que cada agente de la capa superior le envió. Además, el agente de procesamiento responderá a cada agente enviándole una respuesta de confirmación de recepción de los datos para que éstos mueran.
+Una vez el agente haya encontrado la información requerida (todos los links de la página), éste lo enviará a una capa inferior donde se aloja el agente de procesamiento. Este agente tendrá 4 comportamientos, los cuales se encargarán de procesar la información que cada agente de la capa superior le envió. El procesamiento constará de comparar los links recibidos con los dominios de anuncios alojados en un archivo llamado ``blacklist''. Además, el agente de procesamiento responderá a cada agente enviándole una respuesta de confirmación de recepción de los datos para que éstos mueran.
 
 El agente de procesamiento gestionará la información que le envíe cada agente en el orden en el que éstos lo hagan. Después de que toda la información haya sido procesada, éste lo enviará al agente interfaz, el cual se encargará de la visualización de los datos. De igual manera que los agente de la capa superior reciben un mensaje de confirmación, el agente de procesamiento recibirá otro por parte del agente de interfaz. 
 
@@ -103,58 +103,69 @@ En la figura \ref{fig:flujo-sma} se puede ver el flujo que los agentes seguirán
     \label{fig:flujo-sma}
 \end{figure}
 
+\clearpage
+
 \section{EJEMPLO}
 
-En este ejemplo se muestra el uso de la librería \textit{Jsoup} para el tratamiento de código HTML.
+Este ejemplo simula el comportamiento que tendría un agente de recuperación de links en una página cualquiera.
 
-\begin{lstlisting}[caption=Ejemplo de código de recuperación de información de la web,style=java]
+\begin{lstlisting}[caption=Ejemplo de código de recuperación de links de una URL,style=java]
 
 /**
- * Example of retrieving information from the web
+ * Example program to list links from URL. 
  */
 package sample;
-
-import java.io.IOException;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.IOException;
+
 /**
  * @author Alberto Aranda Garcia y Cristian Gomez Portes
- *
  */
-public class HTMLParserExample {
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Document doc;
-		try {
-			// need http protocol
-			doc = Jsoup.connect("http://google.com").get();
-			
-			// get the page title
-			String title = doc.title();
-			System.out.println("title: " + title);
-			
-			// get all links
-			Elements links = doc.select("a[href]");
-			for(Element link : links)
-			{
-				// get the value from href attribute
-				System.out.println("\nlink: " + link.attr("href"));
-				System.out.println("text: " + link.text());
-			}
-		}catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
+public class ListLinks {
+    public static void main(String[] args) throws IOException {
+        String url = "http://www.marca.com/"; // Test URL
+        print("Fetching %s...", url);
 
+        Document doc = Jsoup.connect(url).get();
+        Elements links = doc.select("a[href]");
+        Elements media = doc.select("[src]");
+
+        print("\nMedia: (%d)", media.size());
+        for (Element src : media) {
+            if (src.tagName().equals("img"))
+                print(" * %s: <%s> %sx%s (%s)",
+                        src.tagName(), src.attr("abs:src"), src.attr("width"), src.attr("height"),
+                        trim(src.attr("alt"), 20));
+            else
+                print(" * %s: <%s>", src.tagName(), src.attr("abs:src"));
+        }
+
+        print("\nLinks: (%d)", links.size());
+        for (Element link : links) {
+            print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
+        }
+    }
+
+    private static void print(String msg, Object... args) {
+        System.out.println(String.format(msg, args));
+    }
+
+    private static String trim(String s, int width) {
+        if (s.length() > width)
+            return s.substring(0, width-1) + ".";
+        else
+            return s;
+    }
 }
 
 \end{lstlisting}
 
+En el siguiente enlace se muestra el contenido del archivo ``blacklist'': \url{https://github.com/aarandag/ClassifiAds/blob/master/blacklist.txt}.
 
 \newpage
 
