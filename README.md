@@ -28,6 +28,6 @@ and click on ``Include system libraries when searching for a main class``.
 
 Finally, we go to ``Arguments tab`` in ``Run Configurations..`` and type the following command:
 ``
--gui jade.Boot agente1:domain.Agente1.
+-gui.
 ``
 We click on Enter and we should run our program without difficulties.
