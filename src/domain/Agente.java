@@ -21,21 +21,37 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 
-public class Agente1 extends Agent{
-
+public class Agente extends Agent{
+	Object[] args;
+	
 	protected void setup() {
-		addBehaviour(new RetrievalBehaviour());
+		args = getArguments();
+		
+		/* Get the url */
+		String url = (String) args[0];
+		
+		/* Run behaviour */
+		addBehaviour(new RetrievalBehaviour(url));
 	}
 	
 	private class RetrievalBehaviour extends Behaviour{
 		private String url;
-		private boolean fin;
+		private boolean end;
 		
-		public void onStart() {
-			url = "http://www.marca.com/";
-			fin = false;
+		public RetrievalBehaviour(String url) {
+			this.url = url;
 		}
 		
+		/**
+		 * Initialization of the variables
+		 */
+		public void onStart() {
+			end = false;
+		}
+		
+		/**
+		 * Run the process of the agent
+		 */
 		public void action() {
 	        print("Fetching %s...", url);
 
@@ -54,7 +70,7 @@ public class Agente1 extends Agent{
 	            if (src.tagName().equals("img"))
 	                print(" * %s: <%s> %sx%s (%s)",
 	                        src.tagName(), src.attr("abs:src"), src.attr("width"), src.attr("height"),
-	                        trim(src.attr("alt"), 20));
+	                        src.attr("alt"));
 	            else
 	                print(" * %s: <%s>", src.tagName(), src.attr("abs:src"));
 	        }
@@ -62,35 +78,42 @@ public class Agente1 extends Agent{
 	        /* Retrieve links */
 	        print("\nLinks: (%d)", links.size());
 	        for (Element link : links) {
-	            print(" * a: <%s>  (%s)", link.attr("abs:href"), trim(link.text(), 35));
+	            print(" * a: <%s>  (%s)", link.attr("abs:href"), link.text());
 	        }
 	        
 	        /* Finalize the behaviour */
 	        if(media.size() > 0 && links.size() > 0)
-	        	fin = true;
+	        	end = true;
 		}
 		
+		/**
+		 * Print message in a predetermine format
+		 * @param msg
+		 * @param args
+		 */
 		private void print(String msg, Object... args) {
 	        System.out.println(String.format(msg, args));
 	    }
-
-	    private String trim(String s, int width) {
-	        if (s.length() > width)
-	            return s.substring(0, width-1) + ".";
-	        else
-	            return s;
-	    }
 		
+		/**
+		 * If end is equal to true, the behaviour finalizes
+		 */
 		public boolean done() {
-			return fin;
+			return end;
 		}
 		
+		/**
+		 * Kill the agent
+		 */
 		public int onEnd() {
 			doDelete();
 			return 0;
 		}
 	}
 	
+	/**
+	 * Free resources from the agent
+	 */
 	protected void takeDown() {
 		System.out.println(getLocalName() + " frees resources");
 	}
