@@ -3,7 +3,7 @@
 This project is a multi-agent system that intends to retrieve information from web to classify advertisements. The platform that has been used
 is Jade, a framework implemented in Java language to simplify the implementation of multia-agent systems.
 
-# Installation
+## Installation
 
 First of all, it is important to know that the following installation is made in Eclipse. We begin with cloning or downloading the project using
 the following command:
@@ -31,3 +31,7 @@ Finally, we go to ``Arguments tab`` in ``Run Configurations..`` and type the fol
 -gui.
 ``
 We click on Enter and we should run our program without difficulties.
+
+## Members
+* [Alberto Aranda García](https://github.com/aarandag)
+* [Cristian Gómez Portes](https://github.com/Cris21395)
