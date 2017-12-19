@@ -32,6 +32,11 @@ Finally, we go to ``Arguments tab`` in ``Run Configurations..`` and type the fol
 ``
 We click on Enter and we should run our program without difficulties.
 
+## Software
+* Eclipse IDE
+* Java
+* Jade (Java Agent Development Framework)
+
 ## Members
 * [Alberto Aranda García](https://github.com/aarandag)
 * [Cristian Gómez Portes](https://github.com/Cris21395)
