@@ -12,7 +12,7 @@
 \advisorDepartment{Departamento de Tecnologías y Sistemas de Información}
 \advisorSecond{}
 \intensification{COMPUTACIÓN}
-\docdate{2017}{Octubre}
+\docdate{2017}{Enero}
 
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
@@ -21,6 +21,10 @@
 \definecolor{gray97}{gray}{.97}
 \definecolor{gray75}{gray}{.75}
 \definecolor{gray45}{gray}{.45}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{light-gray}{gray}{0.25}
 
 \lstset{ frame=Ltb,
      framerule=0pt,
@@ -56,19 +60,31 @@
    }
 
 % lenguaje que se utilizará
-\lstdefinestyle{java}
-   {language=Java,
-   }
+\lstdefinestyle{java}{
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\footnotesize\ttfamily},
+  numberstyle={\tiny},
+  numbers=left,
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 
-
-\renewcommand*\lstlistingname{Listado}
-
-
+\renewcommand{\lstlistlistingname}{Índice de listado de código}
 
 \begin{document}
 
 \maketitle
 \tableofcontents
+\pagebreak
+\lstlistoflistings
 
 \newpage
 
