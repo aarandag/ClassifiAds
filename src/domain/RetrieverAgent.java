@@ -23,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class RetrieverAgent extends Agent{
 	Object[] args;
@@ -90,11 +91,12 @@ public class RetrieverAgent extends Agent{
 				System.out.println(e.getMessage());
 			}
 	        Elements links = doc.select("a[href]");
+	        ArrayList<String> attributes = new ArrayList<String>();
 	        
 	        /* Retrieve links */
 	        print("\nLinks: (%d)", links.size());
 	        for (Element link : links) {
-	            print(" * a: <%s>  (%s)", link.attr("abs:href"), link.text());
+	            attributes.add(link.attr("abs:href"));
 	        }
 	        
 	        /* Prepare message */
@@ -107,9 +109,13 @@ public class RetrieverAgent extends Agent{
 	        	ACLMessage sendMessage = new ACLMessage(ACLMessage.INFORM);
 	        	sendMessage.setSender(getAID());
 	        	sendMessage.addReceiver(aid);
-	        	sendMessage.setContent("");
-	        	
-	        	send(sendMessage);
+	        	try {
+					sendMessage.setContentObject(attributes);
+		        	send(sendMessage);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				};
 	        	
 	        	/* Block behaviour until message is received */
 	        	blockingReceive(template);

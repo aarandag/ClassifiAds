@@ -5,6 +5,9 @@ package persistence;
 
 import java.util.ArrayList;
 
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import jade.core.AID;
 
 /**
@@ -17,6 +20,7 @@ import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 import jade.lang.acl.ACLMessage;
 
 public class ProcessorAgent extends Agent{
@@ -76,9 +80,21 @@ public class ProcessorAgent extends Agent{
 		public void action() {
 			ACLMessage message = receive(template);
 			if(message != null) {
+				ArrayList<String> links = null;
+				try {
+					links = (ArrayList<String>) message.getContentObject();
+					
+					 /* Process links */
+					 
+				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				/* Prepare message */
 				AID aid = new AID();
 				aid.setLocalName(agent);
 				
+				/* Send response */
 				ACLMessage response = message.createReply();
 				response.setSender(getAID());
 				response.setContent("");
