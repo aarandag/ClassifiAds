@@ -5,9 +5,6 @@ package persistence;
 
 import java.util.ArrayList;
 
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import jade.core.AID;
 
 /**
@@ -25,19 +22,41 @@ import jade.lang.acl.ACLMessage;
 
 public class ProcessorAgent extends Agent{
 	Object[] args;
+	ArrayList<String> retrievers;
 	
 	protected void setup() {
 		/* Get arguments */
 		args = getArguments();
 		
+		/* Initialize ArryaList */
+		retrievers = new ArrayList<String>();
+		
 		/* check arguments */
-		if(args != null && args.length == 1) {
+		if(args != null && args.length == 4) {
 			
 			/* Get retriever */
-			String retriever = (String) args[0];
+			for(int i = 0; i < args.length; i++) {
+				String retriever = (String) args[i];
+				retrievers.add(retriever);
+			}
+			
+			ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL) {
+				/**
+				 * Kill the Agent
+				 */
+				public int onEnd() {
+					doDelete();
+					return super.onEnd();
+				}
+			};
 			
 			/* Run behaviour */
-			addBehaviour(new ProcessorBehaviour(retriever));
+			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(0)));
+			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(1)));
+			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(2)));
+			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(3)));
+			
+			addBehaviour(pb);
 		}
 		else
 			System.out.println("Error. You must type the name of agent as an argument");
@@ -103,7 +122,7 @@ public class ProcessorAgent extends Agent{
 				send(response);
 				end = true;
 			}else {
-				System.out.println(getBehaviourName() + " is waiting for RetrieverAgent");
+				System.out.println(getBehaviourName() + " is waiting for " + agent);
 				block();
 			}
 		}
@@ -113,14 +132,6 @@ public class ProcessorAgent extends Agent{
 		 */
 		public boolean done() {
 			return end;
-		}
-		
-		/**
-		 * Kill the agent
-		 */
-		public int onEnd() {
-			doDelete();
-			return 0;
 		}
 	}
 	
