@@ -31,6 +31,15 @@ Finally, we go to ``Arguments tab`` in ``Run Configurations..`` and type the fol
 ``
 We click on Enter and we should run our program without difficulties.
 
+## Run
+As a proof to test the project, we can go to ``Arguments tab`` in ``Run Configurations..`` and
+type the following command:
+``
+-agents "processor:persistence.ProcessorAgent("retriever1", "retriever2", "retriever3", "retriever4");retriever1:domain.RetrieverAgent("www.as.com");retriever2:domain.RetrieverAgent("www.sports.es");
+retriever3:domain.RetrieverAgent("www.mundodeportivo.com");retriever4:domain.RetrieverAgent("www.marca.com")"
+``
+Then, we click on the run symbol so that the program starts the execution.
+
 ## Software
 * Eclipse IDE
 * Java
