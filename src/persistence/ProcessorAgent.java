@@ -3,16 +3,8 @@
  */
 package persistence;
 
-import java.util.ArrayList;
-
-import jade.core.AID;
-
-/**
- * @author Alberto Aranda García y Cristian Gómez Portes
- *
- */
-
 /* imports of jade */
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.ParallelBehaviour;
@@ -20,9 +12,16 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.lang.acl.ACLMessage;
 
+import java.util.ArrayList;
+
+/**
+ * @author Alberto Aranda García y Cristian Gómez Portes
+ *
+ */
+
 public class ProcessorAgent extends Agent{
-	Object[] args;
-	ArrayList<String> retrievers;
+	private Object[] args;
+	private ArrayList<String> retrievers;
 	
 	protected void setup() {
 		/* Get arguments */
@@ -35,8 +34,8 @@ public class ProcessorAgent extends Agent{
 		if(args != null && args.length == 4) {
 			
 			/* Get retriever */
-			for(int i = 0; i < args.length; i++) {
-				String retriever = (String) args[i];
+			for(Object arg : args) {
+				String retriever = (String) arg;
 				retrievers.add(retriever);
 			}
 			
@@ -102,13 +101,21 @@ public class ProcessorAgent extends Agent{
 				ArrayList<String> links = null;
 				try {
 					links = (ArrayList<String>) message.getContentObject();
+			        print("Message received from %s", agent);
 					
-					 /* Process links */
+			        /* object that contains all ad servers */
+			        ServerList serverlist = new ServerList();
+			        
+			        /* ArrayList that will contain the ad links */
+			        ArrayList<String> adlinks = new ArrayList<String>();
+			        
+					/* Process links and compare them with the serverlist */
 					 
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 				/* Prepare message */
 				AID aid = new AID();
 				aid.setLocalName(agent);
@@ -116,16 +123,24 @@ public class ProcessorAgent extends Agent{
 				/* Send response */
 				ACLMessage response = message.createReply();
 				response.setSender(getAID());
-				response.setContent("");
 				response.addReceiver(aid);
 				
 				send(response);
 				end = true;
 			}else {
-				System.out.println(getBehaviourName() + " is waiting for " + agent);
+				/* block the agent */
 				block();
 			}
 		}
+		
+		/**
+		 * Print message in a predetermine format
+		 * @param msg
+		 * @param args
+		 */
+		private void print(String msg, Object... args) {
+	        System.out.println(String.format(msg, args));
+	    }
 		
 		/**
 		 * Behaviour finalizes if end is equal to true

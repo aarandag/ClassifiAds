@@ -3,14 +3,8 @@
  */
 package domain;
 
-import jade.core.AID;
-
-/**
- * @author Alberto Aranda García y Cristian Gómez Portes
- *
- */
-
 /* imports of jade */
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.MessageTemplate;
@@ -25,8 +19,13 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * @author Alberto Aranda García y Cristian Gómez Portes
+ *
+ */
+
 public class RetrieverAgent extends Agent{
-	Object[] args;
+	private Object[] args;
 	
 	protected void setup() {
 		/* Get arguments */
@@ -94,9 +93,10 @@ public class RetrieverAgent extends Agent{
 	        ArrayList<String> attributes = new ArrayList<String>();
 	        
 	        /* Retrieve links */
-	        print("\nLinks: (%d)", links.size());
+	        print("\nLinks: (%d) from <%s>", links.size(), url);
 	        for (Element link : links) {
-	            attributes.add(link.attr("abs:href"));
+	        	String attr = link.attr("abs:href");
+	            attributes.add(attr);
 	        }
 	        
 	        /* Prepare message */
@@ -105,7 +105,6 @@ public class RetrieverAgent extends Agent{
 	        
 	        /* Send message if we have found links */
 	        if(links.size() > 0) {
-	        	
 	        	ACLMessage sendMessage = new ACLMessage(ACLMessage.INFORM);
 	        	sendMessage.setSender(getAID());
 	        	sendMessage.addReceiver(aid);
@@ -116,7 +115,7 @@ public class RetrieverAgent extends Agent{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				};
-	        	
+				
 	        	/* Block behaviour until message is received */
 	        	blockingReceive(template);
 	        	end = true;
