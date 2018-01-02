@@ -3,6 +3,7 @@
 \usepackage{listings}
 \usepackage{formular}
 \usepackage[pdftex]{graphicx}
+\usepackage[toc,page]{appendix}
 
 \showhelp  % comenta o borra para eliminar ayudas
 
@@ -84,6 +85,8 @@
 \maketitle
 \tableofcontents
 \pagebreak
+\listoffigures
+\pagebreak
 \lstlistoflistings
 
 \newpage
@@ -121,7 +124,35 @@ En la Figura \ref{fig:flujo-sma} se puede ver el flujo que los agentes seguirán
 
 \clearpage
 
-\section{EJEMPLO}
+\section{MEDIOS QUE SE HAN UTILIZADO}
+
+\subsection{MEDIOS SOFTWARE}
+
+\begin{itemize}
+ \item \textbf{Lenguaje}: para el desarrollo del sistema se ha utilizado el lenguaje Java, ya que la plataforma para el desarrollo 
+ de agentes que se utilizará para la construcción del presente proyecto está implementada con el mismo.
+ \item \textbf{Edición de código}: para la edición de código se ha utilizado el entorno \textit{Eclipse}, el cual facilita la escritura 
+ del código debido al resaltado sintáctico que incorpora para el lenguaje Java.
+ \item \textbf{Entorno de desarrollo}: el entorno a utilizar ha sido \textit{Eclipse}, debido a la facilidad mediante \textbf{JARs} de 
+ integrar la plataforma para el desarrollo de agentes \textbf{JADE}, además del potente depurador que incorpora para ayudar a 
+ corregir fallos en el código.
+ \item \textbf{Orgnización}: se ha utilizado \textit{Git} como sistema de control de versiones y \textit{GitHub} como sistema web
+ para la gestión de código. La elección de ambos sistemas se debe a la experiencia adquirida a lo largo de los últimos años de grado
+ para el desarrollo de prácticas en diferentes asignaturas.
+ \item \textbf{Documentación}: la documentación a desarrollar se ha hecho mediante el sistema de elaboración de textos \LaTeX.
+\end{itemize}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%% ANEXOS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\section{CODIGO}
+
+En el siguiente anexo se plasma el código que se ha desarrollado para la implementación del sistema multi-agente. Además,
+se pretende explicar alguna de las partes que se consideran importantes para mejorar la comprensión del código y justificar
+el porqué de su uso.
+
+\subsection{EJEMPLO}
 
 Este ejemplo simula el comportamiento que tendría un agente de recuperación de links en una página cualquiera.
 
@@ -183,15 +214,13 @@ public class ListLinks {
 
 En el siguiente enlace se muestra el contenido del archivo ``blacklist'': \url{https://github.com/aarandag/ClassifiAds/blob/master/blacklist.txt}.
 
-\newpage
+\clearpage
 
 \bibliographystyle{alpha}
 \singlespacing
 \bibliography{ejemplo}
 
-
 \end{document}
-
 
 % Local Variables:
 % coding: utf-8
