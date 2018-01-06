@@ -21,24 +21,14 @@ import java.util.ArrayList;
 
 public class ProcessorAgent extends Agent{
 	private Object[] args;
-	private ArrayList<String> retrievers;
 
 	protected void setup() {
 		/* Get arguments */
 		args = getArguments();
 
-		/* Initialize ArryaList */
-		retrievers = new ArrayList<String>();
-
 		/* check arguments */
-		if(args != null && args.length == 4) {
-
-			/* Get retriever */
-			for(Object arg : args) {
-				String retriever = (String) arg;
-				retrievers.add(retriever);
-			}
-
+		if(args != null) {
+			/* Create ParallelBehaviour */
 			ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL) {
 				/**
 				 * Kill the Agent
@@ -48,13 +38,14 @@ public class ProcessorAgent extends Agent{
 					return super.onEnd();
 				}
 			};
-
-			/* Run behaviour */
-			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(0)));
-			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(1)));
-			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(2)));
-			pb.addSubBehaviour(new ProcessorBehaviour(retrievers.get(3)));
-
+			
+			/* Get retriever */
+			for(Object retriever : args) {
+				/* Add subBehaviour */
+				pb.addSubBehaviour(new ProcessorBehaviour((String) retriever));
+				
+			}
+			
 			addBehaviour(pb);
 		}
 		else
