@@ -5,7 +5,7 @@ package domain;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 /**
@@ -13,7 +13,7 @@ import java.util.Scanner;
  *
  */
 public class ServerList {
-	private ArrayList<String> serverList;
+	private HashSet<String> serverList;
 	
 	/**
 	 * Constructor of the ServerList class
@@ -26,7 +26,7 @@ public class ServerList {
 	 * Get serverList
 	 * @return
 	 */
-	public ArrayList<String> getServerList(){
+	public HashSet<String> getServerList(){
 		return serverList;
 	}
 	
@@ -34,8 +34,17 @@ public class ServerList {
 	 * Set serverList
 	 * @param serverList
 	 */
-	public void setServerList(ArrayList<String> serverList) {
+	public void setServerList(HashSet<String> serverList) {
 		this.serverList = serverList;
+	}
+	
+	/**
+	 * Whether the serverList contains or not a given server
+	 * @param server
+	 * @return
+	 */
+	public boolean contains(String server) {
+		return serverList.contains(server);
 	}
 	
 	/**
@@ -43,7 +52,7 @@ public class ServerList {
 	 * @param path
 	 * @return
 	 */
-	private ArrayList<String> read_ad_servers_file(String path){
+	private HashSet<String> read_ad_servers_file(String path){
 		Scanner s =  null;
 		try {
 			s = new Scanner(new File(path));
@@ -51,7 +60,7 @@ public class ServerList {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ArrayList<String> list = new ArrayList<String>();
+		HashSet<String> list = new HashSet<String>();
 		while (s.hasNextLine()){
 		    list.add(s.next());
 		}
