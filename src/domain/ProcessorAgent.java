@@ -110,12 +110,12 @@ public class ProcessorAgent extends Agent{
 
 					/* Process links and compare them with the serverlist */
 					for(String link : links) {
-						System.out.println(link);
+						//System.out.println(link);
 						if(serverlist.contains(link)) {
 							adlinks.add(link);
 						}
 					}					
-					System.out.println("Ads detected in " + webpage + ": " + adlinks.size());
+					print("Ads detected in %s: %s", webpage, adlinks.size());
 				} catch (UnreadableException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

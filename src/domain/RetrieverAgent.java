@@ -18,6 +18,8 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Alberto Aranda García y Cristian Gómez Portes
@@ -82,6 +84,11 @@ public class RetrieverAgent extends Agent{
 		 */
 		public void action() {
 			print("Fetching %s...", url);
+			
+			/* pattern to obtain only the domain */
+			String pattern = "((?:[a-z][a-z\\.\\d\\-]+)\\.(?:[a-z][a-z\\-]+))(?![\\w\\.])";
+			
+			Pattern r = Pattern.compile(pattern);
 
 			Document doc = null;
 			try {
@@ -96,7 +103,9 @@ public class RetrieverAgent extends Agent{
 			print("\nLinks: (%d) from <%s>", links.size(), url);
 			for (Element link : links) {
 				String attr = link.attr("abs:href");
-				attributes.add(attr);
+	            Matcher m = r.matcher(attr);
+	            if(m.find())
+	            	attributes.add(m.group(0));
 			}
 			
 			/* Store the web page and ad links */
