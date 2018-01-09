@@ -109,7 +109,7 @@ El sistema multiagente desarrollado se compone de seis agentes como se especific
 
 Una vez el agente haya encontrado la información requerida (todos los links de la página), éste lo enviará a una capa inferior donde se aloja el agente de procesamiento. Este agente tendrá cuatro comportamientos, los cuales se encargarán de procesar la información que cada agente de la capa superior le envió. El procesamiento constará de comparar los links recibidos con los dominios de anuncios alojados en un archivo llamado ``blacklist''. Además, el agente de procesamiento responderá a cada agente enviándole una respuesta de confirmación de recepción de los datos para que éstos mueran.
 
-El agente de procesamiento gestionará la información que le envíe cada agente en el orden en el que éstos lo hagan. Después de que toda la información haya sido procesada, éste lo enviará al agente interfaz, el cual se encargará de la visualización de los datos. De igual manera que los agente de la capa superior reciben un mensaje de confirmación, el agente de procesamiento recibirá otro por parte del agente de interfaz. 
+El agente de procesamiento gestionará la información que le envíe cada agente en el orden en el que éstos lo hagan. Después de que toda la información haya sido procesada, éste lo enviará al agente interfaz, el cual se encargará de la visualización de los datos.
 
 Finalmente, después de que los datos hayan sido mostrados, el usuario podra abortar la ejecución del programa cuando éste lo desee. Acto seguido, el agente interfaz morirá.
 
