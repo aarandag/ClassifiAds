@@ -12,6 +12,7 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.lang.acl.ACLMessage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +28,7 @@ public class ProcessorAgent extends Agent{
 		args = getArguments();
 
 		/* check arguments */
-		if(args != null) {
+		if(args != null && args.length == 4) {
 			/* Create ParallelBehaviour */
 			ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL) {
 				/**
@@ -38,14 +39,15 @@ public class ProcessorAgent extends Agent{
 					return super.onEnd();
 				}
 			};
-			
+
 			/* Get retriever */
 			for(Object retriever : args) {
 				/* Add subBehaviour */
 				pb.addSubBehaviour(new ProcessorBehaviour((String) retriever));
-				
+
 			}
 			
+			/* Add ParallelBehaviour */
 			addBehaviour(pb);
 		}
 		else
@@ -95,7 +97,7 @@ public class ProcessorAgent extends Agent{
 				try {
 					storage = (Storage) message.getContentObject();
 					print("Message received from %s", agent);
-					
+
 					/* get web page */
 					webpage = storage.getWebpage();
 
@@ -110,13 +112,30 @@ public class ProcessorAgent extends Agent{
 
 					/* Process links and compare them with the serverlist */
 					for(String link : links) {
-						//System.out.println(link);
 						if(serverlist.contains(link)) {
 							adlinks.add(link);
 						}
 					}					
 					print("Ads detected in %s: %s", webpage, adlinks.size());
+
+					/* Store the web page and ad links */
+					Storage storage_ads = new Storage(adlinks, webpage);
+
+					/* Prepare message */
+					AID aid = new AID();
+					aid.setLocalName("printer");
+
+					ACLMessage sendMessage = new ACLMessage(ACLMessage.INFORM);
+					sendMessage.setSender(getAID());
+					sendMessage.addReceiver(aid);
+
+					sendMessage.setContentObject(storage_ads);
+					send(sendMessage);
+
 				} catch (UnreadableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -133,7 +152,7 @@ public class ProcessorAgent extends Agent{
 				send(response);
 				end = true;
 			}else {
-				/* block the agent */
+				/* Block the agent */
 				block();
 			}
 		}

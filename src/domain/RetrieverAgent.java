@@ -39,7 +39,7 @@ public class RetrieverAgent extends Agent{
 			/* Get the url */
 			String url = "http://" + (String) args[0] + "/";
 
-			/* Run behaviour */
+			/* Add behaviour */
 			addBehaviour(new RetrievalBehaviour(url));
 		}
 		else
@@ -108,7 +108,7 @@ public class RetrieverAgent extends Agent{
 	            	attributes.add(m.group(0));
 			}
 			
-			/* Store the web page and ad links */
+			/* Store the web page and links */
 			Storage storage = new Storage(attributes, url);
 
 			/* Prepare message */
@@ -126,7 +126,7 @@ public class RetrieverAgent extends Agent{
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				};
+				}
 
 				/* Block behaviour until message is received */
 				blockingReceive(template);
