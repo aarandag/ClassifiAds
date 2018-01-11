@@ -1,6 +1,6 @@
 # ClassifiAds
 
-This project is a multi-agent system that intends to retrieve information (links) from web pages to classify them by the number of advertisements. The platform that has been used is Jade, a framework implemented in Java language to simplify the implementation of multia-agent systems.
+This project is a multi-agent system that intends to retrieve information (links) from web pages to classify them by the number of advertisements. The platform that has been used is Jade, a framework implemented in Java language to simplify the implementation of multi-agent systems.
 
 ## Installation
 
