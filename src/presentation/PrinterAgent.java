@@ -110,10 +110,19 @@ public class PrinterAgent extends Agent{
 					block();
 				}
 			}else {
-				Collection<Integer> values = table.values();
+				/* Print solution */
+				print("******************** %s *********************", "Solution");
+				String leftAlignFormat = "| %-40s | %-4d |%n";
+				System.out.format("+------------------------------------------+------+%n");
+				System.out.format("| WebPage                                  | Ads  |%n");
+				System.out.format("+------------------------------------------+------+%n");
 				Enumeration<String> keys = table.keys();
-				System.out.println(values.toString());
-				System.out.println(keys.toString());
+				do {
+					String key = keys.nextElement();
+					int value = table.get(key);
+				    System.out.format(leftAlignFormat, key, value);
+				}while(keys.hasMoreElements());
+				System.out.format("+------------------------------------------+------+%n");
 				end = true;
 			}
 		}
