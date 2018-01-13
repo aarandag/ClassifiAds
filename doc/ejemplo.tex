@@ -104,25 +104,26 @@
 
 \section{OBJETIVOS}
 
-El presente proyecto trata de clasificar con un sistema multi-agente ciertas páginas con respecto al número de anuncios o ``banners'' y sus tipos (contenido publicitario, sexual, etc.) asociadas a éstas.
+El presente proyecto trata de clasificar con un sistema multi-agente ciertas páginas con respecto al número de anuncios o ``banners'' y sus tipos (contenido publicitario, malicioso, etc.) asociadas a éstas.
 
 El sistema multiagente contará con cuatro agentes, los cuales recogerán información de diferentes páginas (los anuncios o ``banners'' que encuentre) para enviárselo a otro agente, que estará en una capa inferior. Éste se encargará de procesar esa información para establecer el ranking y comprobar de qué tipo son los anuncios. Una vez tengamos la información procesada, ésta será enviada a otro agente, en una capa más inferior, que será el encargado de mostrar el ranking a el usuario mediante una interfaz o similar.
 
-Con respecto a la tecnología a utilizar, se usará Java como lenguaje de programación y Jade, un marco de software que simplifica la implementación de sistemas multi-agentes en Java -- en \cite{bellifemine2002jade} se puede encontrar más información sobre esta plataforma. Además, se utilizarán las siguientes librerías para facilitar el desarrollo del proyecto:
+Con respecto a la tecnología a utilizar, se usará Java como lenguaje de programación y Jade, un marco de software que simplifica la implementación de sistemas multi-agentes en Java -- en \cite{bellifemine2002jade} se puede encontrar más información sobre esta plataforma. Además, se utilizarán las siguientes bibliotecas para facilitar el desarrollo del proyecto:
 
 \begin{itemize}
- \item \textit{Jsoup}: librería utilizada para trabajar con HTML. Sitio de descarga: \url{https://jsoup.org/download}.
-\item  \textit{Regex}: librería para trabajar con expresiones regulares. Viene incluida en el paquete ``util'' de Java.
+ \item \textit{Jsoup}: biblioteca utilizada para trabajar con HTML. Sitio de descarga: \url{https://jsoup.org/download}.
+\item  \textit{Regex}: biblioteca para trabajar con expresiones regulares. Viene incluida en el paquete ``util'' de Java.
 \end{itemize}
 
 \section{ESTRUCTURA DEL SMA}
 El sistema multiagente desarrollado se compone de seis agentes como se especificó en el apartado anterior. Los cuatro agentes de la capa superior contarán con un comportamiento, el cual dedicará su tiempo a buscar diferentes tipos de anuncios. En el caso de que no se encontrará ningún anuncio, el comportamiento volvería a iniciarse para rastrear otra página diferente.
 
-Una vez el agente haya encontrado la información requerida (todos los links de la página), éste lo enviará a una capa inferior donde se aloja el agente de procesamiento. Este agente tendrá cuatro comportamientos, los cuales se encargarán de procesar la información que cada agente de la capa superior le envió. El procesamiento constará de comparar los links recibidos con los dominios de anuncios alojados en un archivo llamado ``blacklist''. Además, el agente de procesamiento responderá a cada agente enviándole una respuesta de confirmación de recepción de los datos para que éstos mueran.
+Una vez el agente haya encontrado la información requerida (todos los links de la página), éste lo enviará a una capa inferior donde se aloja el agente de procesamiento. Este agente tendrá un comportamiento, el cual se encarga de procesar la información que cada agente de la capa superior le envió. El procesamiento constará de comparar los links recibidos con los dominios de anuncios alojados en un archivo llamado ``ad\_servers''. Además, el agente de procesamiento responderá a cada agente enviándole una respuesta de confirmación de recepción de los datos para que éstos mueran.
 
-El agente de procesamiento gestionará la información que le envíe cada agente en el orden en el que éstos lo hagan. Después de que toda la información haya sido procesada, éste lo enviará al agente interfaz, el cual se encargará de la visualización de los datos.
+El agente de procesamiento gestionará la información que le envíe cada agente en el orden en el que éstos lo hagan. Después de que toda la información haya sido procesada, éste lo enviará al agente interfaz, el cual se encargará de la visualización de los datos. Una 
+vez el agente de procesamiento envíe toda la información requerida, éste morirá.
 
-Finalmente, después de que los datos hayan sido mostrados, el usuario podra abortar la ejecución del programa cuando éste lo desee. Acto seguido, el agente interfaz morirá.
+Finalmente, después de que los datos hayan sido mostrados, el usuario podrá abortar la ejecución del programa cuando éste lo desee. El agente interfaz morirá cuando la información sea plasmada en forma de tabla.
 
 En la Figura \ref{fig:flujo-sma} se puede ver el flujo que los agentes seguirán a lo largo de la ejecución.
 
@@ -172,7 +173,7 @@ decidido ignorar este problema por considerar que se sale del alcance del proyec
 objetos \textit{XMLHttpRequest} sí serán detectados, al estar los dominios de servidores de publicidad incluídos en el código JavaScript. No será este el caso cuando
 el código sea externo.
 
-Respecto al problema de clasificación, una vez buscadas en la red varias istas negras de dominios identificados como servicios de anuncios, nos hemos encontrado
+Respecto al problema de clasificación, una vez buscadas en la red varias listas negras de dominios identificados como servicios de anuncios, nos hemos encontrado
 con que ninguna clasifica los dominios según el tipo de anuncios. Es más, según hemos podido constatar, muchos dominios sirven anuncios de toda índole, haciendo imposible
 una clasificación basada solamente en el nombre de dominio. Se han encontrado, también, algunas listas negras con dominios clasificados en maliciosos y de anuncios. Como la
 solución a la clasificación de anuncios es compleja y las clasificación entre malicioso y de anuncios no estaba contemplada en los objetivos iniciales, consideramos que la
@@ -189,14 +190,11 @@ del sistema.
 
 En primer lugar, deberemos copiar la carpeta del proyecto dentro de la carpeta de \textit{jade} y posicionarnos en la raiz del proyecto ClassifiAds, 
 donde se encuentra el archivo que automatiza los procesos mencionados anteriormente. Para compilar todos los archivos \verb|.java| tendremos 
-que ejecutar el siguiente comando: \textbf{make compile}. Este comando generará todos los \verb|.class| de los archivos fuente y los moverá a la
-
-
-carpeta \textit{classes}, la cual usará Jade para ejecutar el sistema.
+que ejecutar el siguiente comando: \textbf{make compile}. Este comando generará todos los \verb|.class| de los archivos fuente y los moverá a la carpeta \textit{classes}, la cual usará Jade para ejecutar el sistema.
 
 En segundo y último lugar, se procederá a ejecutar el comando que despliega el sistema expuesto en este trabajo. El comando es el siguiente:
 \textbf{make run}. Este comando hace las llamadas pertinentes a Jade y ejecuta en un orden establecido los receptores y emisores del sistema
-para que la comunicación entre ellos sea la correcta. En el siguiente listado se puede ver una parte del código que automatiza los procesos de compilación y 
+para que la comunicación entre ellos sea la correcta (printer -> processor -> retriever). En el siguiente listado se puede ver una parte del código que automatiza los procesos de compilación y 
 ejecución, además de los parámetros de los que hacemos uso para el correcto funcionamiento de la aplicación.
 
 \begin{lstlisting}[caption=Makefile,style=makefile]
@@ -402,10 +400,10 @@ public class RetrieverAgent extends Agent{
 
 \end{lstlisting}
 
-En esta clase se hace uso de expresiones regulares porque queremos obtener el dominio de la url, es decir, queremos eliminar
-la parte reservada para http o https y la continuación de .com .es o similar. Por ejemplo, si recibimos la siguiente url:
+En esta clase se hace uso de expresiones regulares para obtener el dominio de la url, es decir, eliminar
+la parte reservada para \textbf{http} o \textbf{https} y la continuación de \textbf{.com}, \textbf{.es} o similar. Por ejemplo, si recibimos la siguiente url:
 https://www.loquesea.com/sdfmvdf0wew4t5/34t obtendremos mediante la expresión regular lo siguiente:
-www.loquesea.com. Esto nos permite agilizar el proceso de búsqueda de anuncios, ya que el archivo `ad\_servers.txt`
+www.loquesea.com. Esto nos permite agilizar el proceso de búsqueda de anuncios, ya que el archivo ``ad\_servers.txt''
 contiene dominios de este estilo.
 
 \subsection{ProcessorAgent.java}
@@ -532,8 +530,6 @@ public class ProcessorAgent extends Agent{
 							adlinks.add(link);
 						}
 					}					
-					print("Ads detected in %s: %s", webpage, adlinks.size());
-
 					/* Store the web page and ad links */
 					Storage storage_ads = new Storage(adlinks, webpage);
 
@@ -602,7 +598,7 @@ public class ProcessorAgent extends Agent{
 
 \subsection{ServerList.java}
 
-Esta clase se encarga de leer el archivo `ad\_servers.txt` para almacenar todos los dominios de anuncios que nos podemos encontrar
+Esta clase se encarga de leer el archivo ``ad\_servers.txt'' para almacenar todos los dominios de anuncios que nos podemos encontrar
 en diferentes páginas web.
 
 \begin{lstlisting}[caption=Código de lectura e inserción de dominios de anuncios,style=java]
@@ -871,16 +867,17 @@ public class PrinterAgent extends Agent{
 				/* Print solution */
 				print("******************** %s *********************", "Solution");
 				String leftAlignFormat = "| %-40s | %-4d |%n";
-				System.out.format("+------------------------------------------+------+%n");
+				Sring format = "+------------------------------------------+------+%n";
+				System.out.format(format);
 				System.out.format("| WebPage                                  | Ads  |%n");
-				System.out.format("+------------------------------------------+------+%n");
+				System.out.format(format);
 				Enumeration<String> keys = table.keys();
 				do {
 					String key = keys.nextElement();
 					int value = table.get(key);
 				    System.out.format(leftAlignFormat, key, value);
 				}while(keys.hasMoreElements());
-				System.out.format("+------------------------------------------+------+%n");
+				System.out.format(format);
 				end = true;
 			}
 		}
