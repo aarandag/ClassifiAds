@@ -1,5 +1,5 @@
 /**
- * Agent that retrieves advertisements from web
+ * Agent that retrieves links from web
  */
 package domain;
 
