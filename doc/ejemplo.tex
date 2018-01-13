@@ -163,6 +163,24 @@ proyecto.
  \item \textbf{Documentación}: la documentación a desarrollar se ha hecho mediante el sistema de elaboración de textos \LaTeX.
 \end{itemize}
 
+\section{PROBLEMAS ENCONTRADOS}
+Según hemos planteado el sistema, el primer problema aparece en la recuperación de links, llevada a cabo por los agentes de la capa superior,
+a los que denominaremos RetrieverAgent. Como ya hemos explicado, nos serviremos de la librería \textit{Jsoup} para recuperar los links. El problema
+está en que la versión del HTML que obtendremos será estática, y no se corresponderá con la que ve el usuario. Muchos de los anuncios se cargan dinámicamente
+mediante JavaScript, y no tendremos acceso a ellos. Usar un motor de ejecución de JavaScript sería costoso y añadiría complejidad a nuestro sistema, así que hemos
+decidido ignorar este problema por considerar que se sale del alcance del proyecto. Remarcar, de todas formas, que muchos de los anuncios cargados por AJAX mediante
+objetos \textit{XMLHttpRequest} sí serán detectados, al estar los dominios de servidores de publicidad incluídos en el código JavaScript. No será este el caso cuando
+el código sea externo.
+
+Respecto al problema de clasificación, una vez buscadas en la red varias istas negras de dominios identificados como servicios de anuncios, nos hemos encontrado
+con que ninguna clasifica los dominios según el tipo de anuncios. Es más, según hemos podido constatar, muchos dominios sirven anuncios de toda índole, haciendo imposible
+una clasificación basada solamente en el nombre de dominio. Se han encontrado, también, algunas listas negras con dominios clasificados en maliciosos y de anuncios. Como la
+solución a la clasificación de anuncios es compleja y las clasificación entre malicioso y de anuncios no estaba contemplada en los objetivos iniciales, consideramos que la
+clasificación se sale del alcance del proyecto, y hemos decidido ignorarla.
+
+Por último, nos hemos encontrado con problemas a la hora de importar librerías externas (\textit{Jsoup}). Desarrollando en \textit{Eclipse}, tras configurar el IDE para que
+se integrase con \textit{Jade}, estos problemas no se daban, pero al tratar de automatizar el despliegue con \textit{make}, nos hemos encontrado con problemas inesperados.
+
 \section{EJECUCIÓN DEL SISTEMA}
 
 Basándonos en la configuración de la máquina virtual proporcionada para el desarrollo de las prácticas de la asignatura de Sistemas Multi-Agentes, 
@@ -172,6 +190,8 @@ del sistema.
 En primer lugar, deberemos copiar la carpeta del proyecto dentro de la carpeta de \textit{jade} y posicionarnos en la raiz del proyecto ClassifiAds, 
 donde se encuentra el archivo que automatiza los procesos mencionados anteriormente. Para compilar todos los archivos \verb|.java| tendremos 
 que ejecutar el siguiente comando: \textbf{make compile}. Este comando generará todos los \verb|.class| de los archivos fuente y los moverá a la
+
+
 carpeta \textit{classes}, la cual usará Jade para ejecutar el sistema.
 
 En segundo y último lugar, se procederá a ejecutar el comando que despliega el sistema expuesto en este trabajo. El comando es el siguiente:
