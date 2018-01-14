@@ -134,6 +134,15 @@ En la Figura \ref{fig:flujo-sma} se puede ver el flujo que los agentes seguirán
     \label{fig:flujo-sma}
 \end{figure}
 
+
+Para la llevar a cabo la identificación entre agentes que haga posible la comunicación, se hace uso del AMS (servicio de páginas blancas). Los agentes que inician la comunicación consultarán al AMS la lista de agentes que hay
+disponibles en la plataforma, y posteriormente, la filtrarán según el nombre local de los agentes. Así, el agente de procesamiento consultará al AMS por la lista de agentes dados de alta en la plataforma, y extraerá, por un
+lado, los agentes de la capa superior (RetrieverAgents), y, por otro, el agente interfaz (PrinterAgent).
+
+Para la comunicación entre agentes, se ha considerado el uso de protocolos, en concreto, FIPA-QUERY para la comunicación entre el ProcessorAgent y los RetrieverAgent, y FIPA-REQUEST para la comunicación entre el ProcessorAgent
+y el PrinterAgent. No obstante, hemos constatado que el uso de protocolos añade una complejidad innecesaria al código, ya que la interacción entre nuestros agentes es más simple que la que establecen estos protocolos, y no
+los aprovechamos al máximo. En el \href{repositorio de GitHub del proyecto}{https://github.com/aarandag/ClassifiAds/tree/protocols} se puede ver una implementación parcial que hemos hecho de esta característica, en el branch ``protocols''.
+
 \clearpage
 
 \section{MEDIOS QUE SE HAN UTILIZADO}
