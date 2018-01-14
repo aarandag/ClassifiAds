@@ -79,6 +79,7 @@ public class PrinterAgent extends Agent{
 		super(a, MessageTemplate.and(MessageTemplate.MatchSender(new AID(agent, false)),
 						  MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
 			this.agent = agent;
+			this.messageReceived = 0;
 		}
 		
 		/**
@@ -93,7 +94,7 @@ public class PrinterAgent extends Agent{
 		 * Run the process of the behaviour
 		 */
 	    protected ACLMessage handleRequest(ACLMessage message) throws NotUnderstoodException, RefuseException {
-			if(messageReceived <= 3) {				
+			if(messageReceived <= 2) {				
 			    messageReceived++;
 			    Storage storage = null;
 			    ArrayList<String> ads = null;
