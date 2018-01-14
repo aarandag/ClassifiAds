@@ -199,18 +199,18 @@ ejecución, además de los parámetros de los que hacemos uso para el correcto f
 
 \begin{lstlisting}[caption=Makefile,style=makefile]
 
-PARAMS 			= 	"printer:presentation.PrinterAgent("processor");\
-			processor:domain.ProcessorAgent("retriever1", "retriever2", "retriever3", "retriever4")\
-			;retriever1:domain.RetrieverAgent("www.as.com");retriever2:domain.RetrieverAgent("www.sports.es")\
-			;retriever3:domain.RetrieverAgent("www.mundodeportivo.com")\
-			;retriever4:domain.RetrieverAgent("www.marca.com")" 
+PARAMS 			= "printer:presentation.PrinterAgent\
+				;processor:domain.ProcessorAgent\
+				;retriever1:domain.RetrieverAgent("www.as.com")\
+				;retriever2:domain.RetrieverAgent("www.sports.es")\
+				;retriever3:domain.RetrieverAgent("www.mundodeportivo.com")\
+				;retriever4:domain.RetrieverAgent("www.marca.com")" 
 
 compile:
 	$(JC) $(JFLAGS) $(SRC1)/*.java $(SRC2)/*.java
 
 run:
 	$(JVM) -cp $(CLASSPATH) $(JADE) $(PARAMS)
-
 \end{lstlisting}
 
 \newpage
@@ -230,7 +230,7 @@ Este clase genera un agente que se encarga de recoger los links de una página w
 \begin{lstlisting}[caption=Código de recuperación de links de una URL,style=java]
 
 /**
- * Agent that retrieves links from web
+ * Agent that retrieves advertisements from web
  */
 package domain;
 
@@ -253,12 +253,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Alberto Aranda Garcia y Cristian Gomez Portes
+ * @author Alberto Aranda Garcia
+ * @author Cristian Gomez Portes
  *
  */
 
 public class RetrieverAgent extends Agent{
-	private Object[] args;
+	private Object [] args;
 
 	protected void setup() {
 		/* Get arguments */
@@ -315,10 +316,10 @@ public class RetrieverAgent extends Agent{
 		 */
 		public void action() {
 			print("Fetching %s...", url);
-			
+
 			/* pattern to obtain only the domain */
 			String pattern = "((?:[a-z][a-z\\.\\d\\-]+)\\.(?:[a-z][a-z\\-]+))(?![\\w\\.])";
-			
+
 			Pattern r = Pattern.compile(pattern);
 
 			Document doc = null;
@@ -331,14 +332,14 @@ public class RetrieverAgent extends Agent{
 			ArrayList<String> attributes = new ArrayList<String>();
 
 			/* Retrieve links */
-			print("\nLinks: (%d) from <%s>", links.size(), url);
+			print("\n%s: Links --> (%d) from <%s>", getLocalName(), links.size(), url);
 			for (Element link : links) {
 				String attr = link.attr("abs:href");
-	            Matcher m = r.matcher(attr);
-	            if(m.find())
-	            	attributes.add(m.group(0));
+				Matcher m = r.matcher(attr);
+				if(m.find())
+					attributes.add(m.group(0));
 			}
-			
+
 			/* Store the web page and links */
 			Storage storage = new Storage(attributes, url);
 
@@ -366,15 +367,6 @@ public class RetrieverAgent extends Agent{
 		}
 
 		/**
-		 * Print message in a predetermine format
-		 * @param msg
-		 * @param args
-		 */
-		private void print(String msg, Object... args) {
-			System.out.println(String.format(msg, args));
-		}
-
-		/**
 		 * Behaviour finalizes if end is equal to true
 		 */
 		public boolean done() {
@@ -389,6 +381,15 @@ public class RetrieverAgent extends Agent{
 			return 0;
 		}
 	}
+	
+	/**
+	 * Print message in a predetermine format
+	 * @param msg
+	 * @param args
+	 */
+	private void print(String msg, Object... args) {
+		System.out.println(String.format(msg, args));
+	}
 
 	/**
 	 * Free resources from the agent
@@ -402,8 +403,8 @@ public class RetrieverAgent extends Agent{
 
 En esta clase se hace uso de expresiones regulares para obtener el dominio de la url, es decir, eliminar
 la parte reservada para \textbf{http} o \textbf{https} y la continuación de \textbf{.com}, \textbf{.es} o similar. Por ejemplo, si recibimos la siguiente url:
-https://www.loquesea.com/sdfmvdf0wew4t5/34t obtendremos mediante la expresión regular lo siguiente:
-www.loquesea.com. Esto nos permite agilizar el proceso de búsqueda de anuncios, ya que el archivo ``ad\_servers.txt''
+https://clk.tradedoubler.com/xxxxxxxxx obtendremos mediante la expresión regular lo siguiente:
+clk.tradedoubler.com. Esto nos permite agilizar el proceso de búsqueda de anuncios, ya que el archivo ``ad\_servers.txt''
 contiene dominios de este estilo.
 
 \subsection{ProcessorAgent.java}
@@ -422,6 +423,10 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.ParallelBehaviour;
+import jade.domain.AMSService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.AMSAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.lang.acl.ACLMessage;
@@ -430,19 +435,39 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author Alberto Aranda Garcia y Cristian Gomez Portes
+ * @author Alberto Aranda Garcia
+ * @author Cristian Gomez Portes
  *
  */
 
 public class ProcessorAgent extends Agent{
-	private Object[] args;
 
 	protected void setup() {
-		/* Get arguments */
-		args = getArguments();
-
-		/* check arguments */
-		if(args != null && args.length == 4) {
+		/* List that stores the agents that are in the AMS catalogue */
+		AMSAgentDescription [] agents = null;
+		
+		/* create search constraint to get all agents */
+		SearchConstraints restrictions = new SearchConstraints();
+		restrictions.setMaxResults(new Long(-1));
+		try {
+			/* Communicate with the AMS Service to store all agents */
+			agents = AMSService.search(this, new AMSAgentDescription(), restrictions);
+		} catch (FIPAException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/* List that stores the name of retrievers */
+		ArrayList<String> retrievers = new ArrayList<String>();
+		print("%s: obtaining retrievers from AMS catalogue", getLocalName());
+		for(int i = 0; i < agents.length; i++) {
+			String agent = agents[i].getName().getLocalName();
+			if(agent.startsWith("retriever")) {
+				retrievers.add(agent);
+			}
+		}
+		
+		/* Check agents */
+		if(retrievers != null && retrievers.size() == 4) {
 			/* Create ParallelBehaviour */
 			ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL) {
 				/**
@@ -455,7 +480,7 @@ public class ProcessorAgent extends Agent{
 			};
 
 			/* Get retriever */
-			for(Object retriever : args) {
+			for(String retriever : retrievers) {
 				/* Add subBehaviour */
 				pb.addSubBehaviour(new ProcessorBehaviour((String) retriever));
 
@@ -465,7 +490,7 @@ public class ProcessorAgent extends Agent{
 			addBehaviour(pb);
 		}
 		else
-			System.out.println("Error. You must type the name of agent as an argument");
+			System.out.println("Error. You have must create four retrieverAgents");
 	}
 	private class ProcessorBehaviour extends Behaviour{
 		private String agent;
@@ -510,7 +535,7 @@ public class ProcessorAgent extends Agent{
 				String webpage = null;
 				try {
 					storage = (Storage) message.getContentObject();
-					print("Message received from %s", agent);
+					print("%s: received message from %s", getLocalName(), agent);
 
 					/* get web page */
 					webpage = storage.getWebpage();
@@ -570,20 +595,20 @@ public class ProcessorAgent extends Agent{
 		}
 
 		/**
-		 * Print message in a predetermine format
-		 * @param msg
-		 * @param args
-		 */
-		private void print(String msg, Object... args) {
-			System.out.println(String.format(msg, args));
-		}
-
-		/**
 		 * Behaviour finalizes if end is equal to true
 		 */
 		public boolean done() {
 			return end;
 		}
+	}
+	
+	/**
+	 * Print message in a predetermine format
+	 * @param msg
+	 * @param args
+	 */
+	private void print(String msg, Object... args) {
+		System.out.println(String.format(msg, args));
 	}
 
 	/**
@@ -593,7 +618,6 @@ public class ProcessorAgent extends Agent{
 		System.out.println(getLocalName() + " frees resources");
 	}
 }
-
 \end{lstlisting}
 
 \subsection{ServerList.java}
@@ -614,7 +638,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 /**
- * @author Alberto Aranda Garcia y Cristian Gomez Portes
+ * @author Alberto Aranda Garcia
+ * @author Cristian Gomez Portes
  *
  */
 public class ServerList {
@@ -693,7 +718,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * @author Alberto Aranda Garcia y Cristian Gomez Portes
+ * @author Alberto Aranda Garcia
+ * @author Cristian Gomez Portes
  *
  */
 public class Storage implements Serializable{
@@ -743,7 +769,6 @@ public class Storage implements Serializable{
 	}
 	
 }
-
 \end{lstlisting}
 
 \subsection{PrinterAgent.java}
@@ -758,43 +783,61 @@ Esta clase genera un agente que se encarga de pintar la información que recibe 
 package presentation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+/* imports of jade */
 import domain.Storage;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.domain.AMSService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.AMSAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 /**
- * @author Alberto Aranda Garcia y Cristian Gomez Portes
+ * @author Alberto Aranda Garcia
+ * @author Cristian Gomez Portes
  *
  */
 public class PrinterAgent extends Agent{
-	private Object[] args;
 	private Hashtable<String, Integer> table;
 	
 	protected void setup() {
 		table = new Hashtable<String, Integer>();
+		/* List that stores the agents that are in the AMS catalogue */
+		AMSAgentDescription [] agents = null;
 		
-		/* Get arguments */
-		args = getArguments();
-
-		/* check arguments */
-		if(args != null && args.length == 1) {
-			
-			/* Get the agent */
-			String agent = (String) args[0];
-
-			/* Add behaviour */
-			addBehaviour(new PrinterBehaviour(agent));
+		/* create search constraint to get all agents */
+		SearchConstraints restrictions = new SearchConstraints();
+		restrictions.setMaxResults(new Long(-1));
+		try {
+			/* Communicate with the AMS Service to store all agents */
+			agents = AMSService.search(this, new AMSAgentDescription(), restrictions);
+		} catch (FIPAException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String processor = null;
+		print("%s: obtaining processor from AMS catalogue", getLocalName());
+		for(int i = 0; i < agents.length; i++) {
+			String agent = agents[i].getName().getLocalName();
+			if(agent.startsWith("processor")) {
+				processor = agent;
+			}
+		}
+		
+		/* Check agents */
+		if(processor != null) {
+			/* Add Behaviour */
+			addBehaviour(new PrinterBehaviour(processor));
 		}
 		else
-			System.out.println("Error. You must type the name of agent as an argument");
+			System.out.println("Error. You have must create a processorAgent");
 	}
 	
 	private class PrinterBehaviour extends Behaviour {
@@ -844,7 +887,7 @@ public class PrinterAgent extends Agent{
 					String webpage = null;
 					try {
 						storage = (Storage) message.getContentObject();
-						print("Message received from %s", agent);
+						print("%s: received message from %s", getLocalName(), agent);
 
 						/* get web page */
 						webpage = storage.getWebpage();
@@ -866,8 +909,8 @@ public class PrinterAgent extends Agent{
 			}else {
 				/* Print solution */
 				print("******************** %s *********************", "Solution");
+				String format = "+------------------------------------------+------+%n";
 				String leftAlignFormat = "| %-40s | %-4d |%n";
-				Sring format = "+------------------------------------------+------+%n";
 				System.out.format(format);
 				System.out.format("| WebPage                                  | Ads  |%n");
 				System.out.format(format);
@@ -880,15 +923,6 @@ public class PrinterAgent extends Agent{
 				System.out.format(format);
 				end = true;
 			}
-		}
-		
-		/**
-		 * Print message in a predetermine format
-		 * @param msg
-		 * @param args
-		 */
-		private void print(String msg, Object... args) {
-			System.out.println(String.format(msg, args));
 		}
 		
 		/**
@@ -905,13 +939,21 @@ public class PrinterAgent extends Agent{
 	}
 	
 	/**
+	 * Print message in a predetermine format
+	 * @param msg
+	 * @param args
+	 */
+	private void print(String msg, Object... args) {
+		System.out.println(String.format(msg, args));
+	}
+	
+	/**
 	 * Free resources from the agent
 	 */
 	protected void takeDown() {
 		System.out.println(getLocalName() + " frees resources");
 	}
 }
-
 \end{lstlisting}
 
 \subsection{Makefile}
@@ -927,11 +969,12 @@ JC 			= javac
 JVM			= java
 CLASSPATH		:= "$(CLASSPATH):lib/jsoup-1.10.3.jar"
 CLASSDIR 		= ../classes
-JFLAGS 			= -d $(CLASSDIR) -cp $(CLASSPATH)
+JFLAGS 		= -d $(CLASSDIR) -cp $(CLASSPATH)
 JADE 			= jade.Boot -agents
-PARAMS 			= 	"printer:presentation.PrinterAgent("processor");\
-			processor:domain.ProcessorAgent("retriever1", "retriever2", "retriever3", "retriever4")\
-			;retriever1:domain.RetrieverAgent("www.as.com");retriever2:domain.RetrieverAgent("www.sports.es")\
+PARAMS 		= "printer:presentation.PrinterAgent;\
+			processor:domain.ProcessorAgent\
+			;retriever1:domain.RetrieverAgent("www.as.com")\
+			;retriever2:domain.RetrieverAgent("www.sports.es")\
 			;retriever3:domain.RetrieverAgent("www.mundodeportivo.com")\
 			;retriever4:domain.RetrieverAgent("www.marca.com")" 
 SRC1 			= src/domain
