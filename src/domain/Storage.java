@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * @author Alberto Aranda García y Cristian Gómez Portes
+ * @author Alberto Aranda García
+ * @author Cristian Gómez Portes
  *
  */
 public class Storage implements Serializable{

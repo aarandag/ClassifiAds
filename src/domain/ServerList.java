@@ -9,7 +9,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 /**
- * @author Alberto Aranda García y Cristian Gómez Portes
+ * @author Alberto Aranda García
+ * @author Cristian Gómez Portes
  *
  */
 public class ServerList {

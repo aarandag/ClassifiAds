@@ -1,5 +1,5 @@
 /**
- * Agent that retrieves links from web
+ * Agent that retrieves advertisements from web
  */
 package domain;
 
@@ -22,12 +22,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Alberto Aranda García y Cristian Gómez Portes
+ * @author Alberto Aranda García
+ * @author Cristian Gómez Portes
  *
  */
 
 public class RetrieverAgent extends Agent{
-	private Object[] args;
+	private Object [] args;
 
 	protected void setup() {
 		/* Get arguments */
@@ -84,10 +85,10 @@ public class RetrieverAgent extends Agent{
 		 */
 		public void action() {
 			print("Fetching %s...", url);
-			
+
 			/* pattern to obtain only the domain */
 			String pattern = "((?:[a-z][a-z\\.\\d\\-]+)\\.(?:[a-z][a-z\\-]+))(?![\\w\\.])";
-			
+
 			Pattern r = Pattern.compile(pattern);
 
 			Document doc = null;
@@ -100,14 +101,14 @@ public class RetrieverAgent extends Agent{
 			ArrayList<String> attributes = new ArrayList<String>();
 
 			/* Retrieve links */
-			print("\nLinks: (%d) from <%s>", links.size(), url);
+			print("\n%s: Links --> (%d) from <%s>", getLocalName(), links.size(), url);
 			for (Element link : links) {
 				String attr = link.attr("abs:href");
-	            Matcher m = r.matcher(attr);
-	            if(m.find())
-	            	attributes.add(m.group(0));
+				Matcher m = r.matcher(attr);
+				if(m.find())
+					attributes.add(m.group(0));
 			}
-			
+
 			/* Store the web page and links */
 			Storage storage = new Storage(attributes, url);
 

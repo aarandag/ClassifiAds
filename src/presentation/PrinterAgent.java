@@ -4,11 +4,12 @@
 package presentation;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import domain.Storage;
+
+/* imports of jade */
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -17,7 +18,8 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 /**
- * @author Alberto Aranda García y Cristian Gómez Portes
+ * @author Alberto Aranda García
+ * @author Cristian Gómez Portes
  *
  */
 public class PrinterAgent extends Agent{
@@ -90,7 +92,7 @@ public class PrinterAgent extends Agent{
 					String webpage = null;
 					try {
 						storage = (Storage) message.getContentObject();
-						print("Message received from %s", agent);
+						print("%s: received message from %s", getLocalName(), agent);
 
 						/* get web page */
 						webpage = storage.getWebpage();

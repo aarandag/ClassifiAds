@@ -8,6 +8,10 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.ParallelBehaviour;
+import jade.domain.AMSService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.AMSAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.lang.acl.ACLMessage;
@@ -16,19 +20,39 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author Alberto Aranda García y Cristian Gómez Portes
+ * @author Alberto Aranda García
+ * @author Cristian Gómez Portes
  *
  */
 
 public class ProcessorAgent extends Agent{
-	private Object[] args;
 
 	protected void setup() {
-		/* Get arguments */
-		args = getArguments();
-
-		/* check arguments */
-		if(args != null && args.length == 4) {
+		/* List that stores the agents that are in the AMS catalogue */
+		AMSAgentDescription [] agents = null;
+		
+		/* create search constraint to get all agents */
+		SearchConstraints restrictions = new SearchConstraints();
+		restrictions.setMaxResults(new Long(-1));
+		try {
+			/* Communicate with the AMS Service to store all agents */
+			agents = AMSService.search(this, new AMSAgentDescription(), restrictions);
+		} catch (FIPAException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/* List that stores the name of retrievers */
+		ArrayList<String> retrievers = new ArrayList<String>();
+		print("%s: obtaining retrievers from AMS catalogue", getLocalName());
+		for(int i = 0; i < agents.length; i++) {
+			String agent = agents[i].getName().getLocalName();
+			if(agent.startsWith("retriever")) {
+				retrievers.add(agent);
+			}
+		}
+		
+		/* Check agents */
+		if(retrievers != null && retrievers.size() == 4) {
 			/* Create ParallelBehaviour */
 			ParallelBehaviour pb = new ParallelBehaviour(ParallelBehaviour.WHEN_ALL) {
 				/**
@@ -41,7 +65,7 @@ public class ProcessorAgent extends Agent{
 			};
 
 			/* Get retriever */
-			for(Object retriever : args) {
+			for(String retriever : retrievers) {
 				/* Add subBehaviour */
 				pb.addSubBehaviour(new ProcessorBehaviour((String) retriever));
 
@@ -51,7 +75,7 @@ public class ProcessorAgent extends Agent{
 			addBehaviour(pb);
 		}
 		else
-			System.out.println("Error. You must type the name of agent as an argument");
+			System.out.println("Error. You have must create four retrieverAgents");
 	}
 	private class ProcessorBehaviour extends Behaviour{
 		private String agent;
@@ -96,7 +120,7 @@ public class ProcessorAgent extends Agent{
 				String webpage = null;
 				try {
 					storage = (Storage) message.getContentObject();
-					print("Message received from %s", agent);
+					print("%s: received message from %s", getLocalName(), agent);
 
 					/* get web page */
 					webpage = storage.getWebpage();
@@ -116,8 +140,6 @@ public class ProcessorAgent extends Agent{
 							adlinks.add(link);
 						}
 					}					
-					print("Ads detected in %s: %s", webpage, adlinks.size());
-
 					/* Store the web page and ad links */
 					Storage storage_ads = new Storage(adlinks, webpage);
 
@@ -158,20 +180,20 @@ public class ProcessorAgent extends Agent{
 		}
 
 		/**
-		 * Print message in a predetermine format
-		 * @param msg
-		 * @param args
-		 */
-		private void print(String msg, Object... args) {
-			System.out.println(String.format(msg, args));
-		}
-
-		/**
 		 * Behaviour finalizes if end is equal to true
 		 */
 		public boolean done() {
 			return end;
 		}
+	}
+	
+	/**
+	 * Print message in a predetermine format
+	 * @param msg
+	 * @param args
+	 */
+	private void print(String msg, Object... args) {
+		System.out.println(String.format(msg, args));
 	}
 
 	/**

@@ -36,7 +36,7 @@ As a proof to test the project, we can go to ``Arguments tab`` in ``Run Configur
 type the following command:
 ```
 -agents "printer:presentation.PrinterAgent("processor");
-processor:domain.ProcessorAgent("retriever1", "retriever2", "retriever3", "retriever4");
+processor:domain.ProcessorAgent;
 retriever1:domain.RetrieverAgent("www.as.com");
 retriever2:domain.RetrieverAgent("www.sports.es");
 retriever3:domain.RetrieverAgent("www.mundodeportivo.com");
