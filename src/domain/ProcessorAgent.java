@@ -15,6 +15,8 @@ import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import jade.lang.acl.ACLMessage;
+import jade.proto.AchieveREInitiator;
+import jade.domain.FIPANames;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -147,7 +149,8 @@ public class ProcessorAgent extends Agent{
 					AID aid = new AID();
 					aid.setLocalName("printer");
 
-					ACLMessage sendMessage = new ACLMessage(ACLMessage.INFORM);
+					ACLMessage sendMessage = new ACLMessage(ACLMessage.REQUEST);
+					sendMessage.setProtocol(FIPANames.InteractionProtocol.FIPA_REQUEST);
 					sendMessage.setSender(getAID());
 					sendMessage.addReceiver(aid);
 

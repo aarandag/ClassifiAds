@@ -19,6 +19,10 @@ import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import jade.domain.FIPAAgentManagement.NotUnderstoodException;
+import jade.domain.FIPAAgentManagement.RefuseException;
+import jade.domain.FIPAAgentManagement.FailureException;
+import jade.proto.AchieveREResponder;
 
 /**
  * @author Alberto Aranda García
@@ -55,13 +59,13 @@ public class PrinterAgent extends Agent{
 		/* Check agents */
 		if(processor != null) {
 			/* Add Behaviour */
-			addBehaviour(new PrinterBehaviour(processor));
+		    addBehaviour(new PrinterBehaviour(this, processor));
 		}
 		else
 			System.out.println("Error. You have must create a processorAgent");
 	}
 	
-	private class PrinterBehaviour extends Behaviour {
+	private class PrinterBehaviour extends AchieveREResponder {
 		private String agent;
 		private boolean end;
 		private int messageReceived;
@@ -71,63 +75,47 @@ public class PrinterAgent extends Agent{
 		 * Constructor of the ProcessalBehaviour class
 		 * @param agent
 		 */
-		public PrinterBehaviour(String agent) {
+	    public PrinterBehaviour(Agent a, String agent) {
+		super(a, MessageTemplate.and(MessageTemplate.MatchSender(new AID(agent, false)),
+						  MessageTemplate.MatchPerformative(ACLMessage.REQUEST)));
 			this.agent = agent;
-			
-			AID aid = new AID();
-			aid.setLocalName(agent);
-
-			/* Return a template from message that matches with 'Processor' */
-			MessageTemplate senderFilter = MessageTemplate.MatchSender(aid);
-
-			/* Return a template from message that matches with this performative */
-			MessageTemplate informFilter = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-
-			/* Build template */
-			template = MessageTemplate.and(senderFilter, informFilter);
 		}
 		
 		/**
 		 * Initialization of the variables
 		 */
-		public void onStart() {
+		/*public void onStart() {
 			end = false;
 			messageReceived = 0;
-		}
-		
+			}*/
+	    
 		/**
 		 * Run the process of the behaviour
 		 */
-		public void action() {
-			if(messageReceived <= 3) {
-				ACLMessage message = receive(template);
-				if(message != null) {
-					messageReceived++;
-					Storage storage = null;
-					ArrayList<String> ads = null;
-					String webpage = null;
-					try {
-						storage = (Storage) message.getContentObject();
-						print("%s: received message from %s", getLocalName(), agent);
-
-						/* get web page */
-						webpage = storage.getWebpage();
-
-						/* get ads */
-						ads = storage.getLinks();
-						
-						/* Add information in table */
-						table.put(webpage, ads.size());
-						
-					} catch (UnreadableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}else {
-					/* Block the agent */
-					block();
-				}
-			}else {
+	    protected ACLMessage handleRequest(ACLMessage message) throws NotUnderstoodException, RefuseException {
+			if(messageReceived <= 3) {				
+			    messageReceived++;
+			    Storage storage = null;
+			    ArrayList<String> ads = null;
+			    String webpage = null;
+			    try {
+				storage = (Storage) message.getContentObject();
+				print("%s: received message from %s", getLocalName(), agent);
+				
+				/* get web page */
+				webpage = storage.getWebpage();
+				
+				/* get ads */
+				ads = storage.getLinks();
+				
+				/* Add information in table */
+				table.put(webpage, ads.size());
+				
+			    } catch (UnreadableException e) {					    
+				e.printStackTrace();
+				throw new NotUnderstoodException("Unreadable message's content");
+			    }
+			} else {
 				/* Print solution */
 				print("******************** %s *********************", "Solution");
 				String leftAlignFormat = "| %-40s | %-4d |%n";
@@ -143,11 +131,21 @@ public class PrinterAgent extends Agent{
 				System.out.format("+------------------------------------------+------+%n");
 				end = true;
 			}
-		}
+			ACLMessage agree = message.createReply();
+			agree.setPerformative(ACLMessage.AGREE);
+			return agree;
+	    }
+
+	    protected ACLMessage prepareResultNotification(ACLMessage request,ACLMessage response) throws FailureException {
+		ACLMessage inform = request.createReply();
+		inform.setPerformative(ACLMessage.INFORM);
+		return inform;
+	    }
 		
 		/**
 		 * Behaviour finalizes if end is equal to true
 		 */
+	        /*
 		public boolean done() {
 			return end;
 		}
@@ -155,7 +153,7 @@ public class PrinterAgent extends Agent{
 		public int onEnd() {
 			doDelete();
 			return 0;
-		}
+			}*/
 	}
 	
 	/**
