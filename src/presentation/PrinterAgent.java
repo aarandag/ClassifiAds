@@ -72,7 +72,7 @@ public class PrinterAgent extends Agent{
 		private MessageTemplate template = null;
 		
 		/**
-		 * Constructor of the ProcessalBehaviour class
+		 * Constructor of the PrinterBehaviour class
 		 * @param agent
 		 */
 	    public PrinterBehaviour(Agent a, String agent) {
@@ -82,13 +82,6 @@ public class PrinterAgent extends Agent{
 			this.messageReceived = 0;
 		}
 		
-		/**
-		 * Initialization of the variables
-		 */
-		/*public void onStart() {
-			end = false;
-			messageReceived = 0;
-			}*/
 	    
 		/**
 		 * Run the process of the behaviour
@@ -142,19 +135,6 @@ public class PrinterAgent extends Agent{
 		inform.setPerformative(ACLMessage.INFORM);
 		return inform;
 	    }
-		
-		/**
-		 * Behaviour finalizes if end is equal to true
-		 */
-	        /*
-		public boolean done() {
-			return end;
-		}
-		
-		public int onEnd() {
-			doDelete();
-			return 0;
-			}*/
 	}
 	
 	/**
