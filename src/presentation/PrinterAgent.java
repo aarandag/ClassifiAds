@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import domain.Storage;
-
 /* imports of jade */
+import domain.Storage;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.domain.AMSService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.AMSAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
@@ -23,26 +26,39 @@ import jade.lang.acl.UnreadableException;
  *
  */
 public class PrinterAgent extends Agent{
-	private Object[] args;
 	private Hashtable<String, Integer> table;
 	
 	protected void setup() {
 		table = new Hashtable<String, Integer>();
+		/* List that stores the agents that are in the AMS catalogue */
+		AMSAgentDescription [] agents = null;
 		
-		/* Get arguments */
-		args = getArguments();
-
-		/* check arguments */
-		if(args != null && args.length == 1) {
-			
-			/* Get the agent */
-			String agent = (String) args[0];
-
-			/* Add behaviour */
-			addBehaviour(new PrinterBehaviour(agent));
+		/* create search constraint to get all agents */
+		SearchConstraints restrictions = new SearchConstraints();
+		restrictions.setMaxResults(new Long(-1));
+		try {
+			/* Communicate with the AMS Service to store all agents */
+			agents = AMSService.search(this, new AMSAgentDescription(), restrictions);
+		} catch (FIPAException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String processor = null;
+		print("%s: obtaining processor from AMS catalogue", getLocalName());
+		for(int i = 0; i < agents.length; i++) {
+			String agent = agents[i].getName().getLocalName();
+			if(agent.startsWith("processor")) {
+				processor = agent;
+			}
+		}
+		
+		/* Check agents */
+		if(processor != null) {
+			/* Add Behaviour */
+			addBehaviour(new PrinterBehaviour(processor));
 		}
 		else
-			System.out.println("Error. You must type the name of agent as an argument");
+			System.out.println("Error. You have must create a processorAgent");
 	}
 	
 	private class PrinterBehaviour extends Behaviour {
@@ -130,15 +146,6 @@ public class PrinterAgent extends Agent{
 		}
 		
 		/**
-		 * Print message in a predetermine format
-		 * @param msg
-		 * @param args
-		 */
-		private void print(String msg, Object... args) {
-			System.out.println(String.format(msg, args));
-		}
-		
-		/**
 		 * Behaviour finalizes if end is equal to true
 		 */
 		public boolean done() {
@@ -149,6 +156,15 @@ public class PrinterAgent extends Agent{
 			doDelete();
 			return 0;
 		}
+	}
+	
+	/**
+	 * Print message in a predetermine format
+	 * @param msg
+	 * @param args
+	 */
+	private void print(String msg, Object... args) {
+		System.out.println(String.format(msg, args));
 	}
 	
 	/**

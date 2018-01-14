@@ -136,15 +136,6 @@ public class RetrieverAgent extends Agent{
 		}
 
 		/**
-		 * Print message in a predetermine format
-		 * @param msg
-		 * @param args
-		 */
-		private void print(String msg, Object... args) {
-			System.out.println(String.format(msg, args));
-		}
-
-		/**
 		 * Behaviour finalizes if end is equal to true
 		 */
 		public boolean done() {
@@ -158,6 +149,15 @@ public class RetrieverAgent extends Agent{
 			doDelete();
 			return 0;
 		}
+	}
+	
+	/**
+	 * Print message in a predetermine format
+	 * @param msg
+	 * @param args
+	 */
+	private void print(String msg, Object... args) {
+		System.out.println(String.format(msg, args));
 	}
 
 	/**

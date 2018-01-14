@@ -35,7 +35,7 @@ We click on Enter and we should run our program without difficulties.
 As a proof to test the project, we can go to ``Arguments tab`` in ``Run Configurations..`` and
 type the following command:
 ```
--agents "printer:presentation.PrinterAgent("processor");
+-agents "printer:presentation.PrinterAgent;
 processor:domain.ProcessorAgent;
 retriever1:domain.RetrieverAgent("www.as.com");
 retriever2:domain.RetrieverAgent("www.sports.es");

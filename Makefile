@@ -7,7 +7,7 @@ CLASSPATH		:= "$(CLASSPATH):lib/jsoup-1.10.3.jar"
 CLASSDIR 		= ../classes
 JFLAGS 			= -d $(CLASSDIR) -cp $(CLASSPATH)
 JADE 			= jade.Boot -agents
-PARAMS 			= 	"printer:presentation.PrinterAgent("processor")\
+PARAMS 			= 	"printer:presentation.PrinterAgent\
 					;processor:domain.ProcessorAgent\
 					;retriever1:domain.RetrieverAgent("www.as.com")\
 					;retriever2:domain.RetrieverAgent("www.sports.es")\
